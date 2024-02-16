@@ -14,6 +14,7 @@ func NewRenderCommand(ctr *app.Container) *cobra.Command {
 	}
 
 	cmd.AddCommand(render.NewTrivyCommand(ctr))
+	cmd.AddCommand(render.NewGrypeCommand(ctr))
 
 	setupRenderCommandFlags(cmd)
 

@@ -20,6 +20,11 @@ ifeq ("$(shell uname -m)", "arm64")
 	_RUSTARCH = "aarch64"
 endif
 
+.PHONY: check-variable-%
+
+check-variable-%:
+	@[[ "${${*}}" ]] || (echo '*** Please define variable `${*}` ***' && exit 1)
+
 tools:
 	@curl -sL -o /tmp/tailwindcss-${_GOOS}-${_GOARCH} \
 		https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.1/tailwindcss-${_GOOS}-${_GOARCH}
@@ -30,8 +35,8 @@ tools:
 	@chmod +x /tmp/miniserve-${_RUSTOS}-${_RUSTARCH}
 	@sudo mv /tmp/miniserve-${_RUSTOS}-${_RUSTARCH} /usr/local/bin/miniserve
 
-watch:
-	@find internal/scn/trivy -name '*.html.tpl' | entr -s 'go run main.go render trivy --output-dir=dist/ ../images/tools/checkmake/reports/trivy.json'
+watch: check-variable-SCANNER check-variable-TOOL
+	@find internal/scn/${SCANNER} -name '*.html.tpl' | entr -s 'go run main.go render ${SCANNER} --output-dir=dist/ ../images/tools/${TOOL}/reports/${SCANNER}.json'
 
 serve:
 	@miniserve dist/
