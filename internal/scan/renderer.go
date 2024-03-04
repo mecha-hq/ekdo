@@ -1,4 +1,4 @@
-package scn
+package scan
 
 import (
 	"embed"

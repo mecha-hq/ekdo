@@ -36,7 +36,7 @@ tools:
 	@sudo mv /tmp/miniserve-${_RUSTOS}-${_RUSTARCH} /usr/local/bin/miniserve
 
 watch: check-variable-SCANNER check-variable-TOOL
-	@find internal/scn/${SCANNER} -name '*.html.tpl' | entr -s 'go run main.go render ${SCANNER} --output-dir=dist/ ../images/tools/${TOOL}/reports/${SCANNER}.json'
+	@find internal/scan/${SCANNER} -name '*.html.tpl' | entr -s 'go run main.go render ${SCANNER} --output-dir=dist/ ../images/tools/${TOOL}/reports/${SCANNER}.json'
 
 serve:
 	@miniserve dist/

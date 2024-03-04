@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/anchore/grype/grype/presenter/models"
-	"github.com/mecha-ci/ekdo/internal/scn"
+	"github.com/mecha-ci/ekdo/internal/scan"
 	iox "github.com/mecha-ci/ekdo/internal/x/io"
 )
 
@@ -17,7 +17,7 @@ var (
 	ErrCannotCreateScanRenderer = fmt.Errorf("cannot create new grype scan renderer")
 )
 
-func NewScanRenderer(inputFile, outputDir string) (scn.Renderer, error) {
+func NewScanRenderer(inputFile, outputDir string) (scan.Renderer, error) {
 	r, err := iox.NewInputReader(inputFile)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
@@ -28,5 +28,5 @@ func NewScanRenderer(inputFile, outputDir string) (scn.Renderer, error) {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}
 
-	return scn.NewDefaultRenderer[models.Document]("grype", r, w, emfs), nil
+	return scan.NewDefaultRenderer[models.Document]("grype", r, w, emfs), nil
 }

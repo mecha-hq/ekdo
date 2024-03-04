@@ -4,10 +4,10 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/mecha-ci/ekdo/internal/scn"
-	"github.com/mecha-ci/ekdo/internal/scn/grype"
-	"github.com/mecha-ci/ekdo/internal/scn/snyk"
-	"github.com/mecha-ci/ekdo/internal/scn/trivy"
+	"github.com/mecha-ci/ekdo/internal/scan"
+	"github.com/mecha-ci/ekdo/internal/scan/grype"
+	"github.com/mecha-ci/ekdo/internal/scan/snyk"
+	"github.com/mecha-ci/ekdo/internal/scan/trivy"
 )
 
 var ErrCannotCreateContainer = errors.New("cannot create container")
@@ -19,15 +19,13 @@ func NewDefaultParameters() Parameters {
 }
 
 type Parameters struct {
-	Versions  map[string]string
-	LogLevel  slog.Level
-	Debug     bool
-	InputFile string
-	OutputDir string
+	Versions map[string]string
+	LogLevel slog.Level
+	Debug    bool
 }
 
 type services struct {
-	scanRendererFactory *scn.RendererFactory
+	scanRendererFactory *scan.RendererFactory
 }
 
 func NewContainer() *Container {
@@ -41,9 +39,9 @@ type Container struct {
 	services
 }
 
-func (c *Container) ScanRendererFactory() *scn.RendererFactory {
+func (c *Container) ScanRendererFactory() *scan.RendererFactory {
 	if c.scanRendererFactory == nil {
-		c.scanRendererFactory = scn.NewRendererFactory()
+		c.scanRendererFactory = scan.NewRendererFactory()
 
 		c.ScanRendererFactory().Register("grype", grype.NewScanRenderer)
 		c.ScanRendererFactory().Register("trivy", trivy.NewScanRenderer)

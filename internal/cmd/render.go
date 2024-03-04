@@ -27,7 +27,7 @@ func NewRenderCommand(ctr *app.Container) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags, err := getRenderCommandFlags(cmd)
 			if err != nil {
-				return err
+				return fmt.Errorf("%w: %w", ErrCannotCompleteRenderCommand, err)
 			}
 
 			toolName := args[0]

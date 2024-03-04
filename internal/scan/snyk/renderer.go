@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/mecha-ci/ekdo/internal/scn"
+	"github.com/mecha-ci/ekdo/internal/scan"
 	iox "github.com/mecha-ci/ekdo/internal/x/io"
 )
 
@@ -17,7 +17,7 @@ var (
 )
 
 // TODO: set the type of the report
-func NewScanRenderer(inputFile, outputDir string) (scn.Renderer, error) {
+func NewScanRenderer(inputFile, outputDir string) (scan.Renderer, error) {
 	r, err := iox.NewInputReader(inputFile)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
@@ -28,5 +28,5 @@ func NewScanRenderer(inputFile, outputDir string) (scn.Renderer, error) {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}
 
-	return scn.NewDefaultRenderer[any]("snyk", r, w, emfs), nil
+	return scan.NewDefaultRenderer[any]("snyk", r, w, emfs), nil
 }
