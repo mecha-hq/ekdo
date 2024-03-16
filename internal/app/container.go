@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/mecha-ci/ekdo/internal/scan"
+	"github.com/mecha-ci/ekdo/internal/scan/dockle"
 	"github.com/mecha-ci/ekdo/internal/scan/grype"
 	"github.com/mecha-ci/ekdo/internal/scan/snyk"
 	"github.com/mecha-ci/ekdo/internal/scan/trivy"
@@ -43,6 +44,7 @@ func (c *Container) ScanRendererFactory() *scan.RendererFactory {
 	if c.scanRendererFactory == nil {
 		c.scanRendererFactory = scan.NewRendererFactory()
 
+		c.ScanRendererFactory().Register("dockle", dockle.NewScanRenderer)
 		c.ScanRendererFactory().Register("grype", grype.NewScanRenderer)
 		c.ScanRendererFactory().Register("trivy", trivy.NewScanRenderer)
 		c.ScanRendererFactory().Register("snyk", snyk.NewScanRenderer)
