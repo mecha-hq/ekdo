@@ -1,1 +1,5 @@
-golang 1.22.0
+golang 1.22.1
+dockle 0.4.13
+grype 0.74.2
+snyk 1.1274.0
+trivy 0.48.3
