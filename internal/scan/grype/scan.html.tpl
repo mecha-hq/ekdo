@@ -6,7 +6,7 @@
 </head>
 
 <body>
-  <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded shadow">
     <div class="flex flex-row">
       <div class="avatar place-self-center">
         <div class="mask mask-squircle w-12 h-12">

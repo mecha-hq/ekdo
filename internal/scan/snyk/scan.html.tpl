@@ -6,7 +6,7 @@
 </head>
 
 <body>
-  <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded shadow">
     <div class="flex flex-row">
       <div class="avatar place-self-center">
         <div class="mask mask-squircle w-12 h-12">
@@ -29,19 +29,19 @@
           <tbody class="divide-none">
             <tr style="border: none">
               <td class="font-bold py-2 px-4 border-b">Artifact Name</td>
-              <td class="py-2 px-4 border-b">{{ title (index .Source.Target "userInput") }}</td>
+              <td class="py-2 px-4 border-b">{{ title "Todo" }}</td>
             </tr>
             <tr>
               <td class="font-bold py-2 px-4 border-b">Artifact Type</td>
-              <td class="py-2 px-4 border-b">{{ title .Source.Type }}</td>
+              <td class="py-2 px-4 border-b">{{ title "Todo" }}</td>
             </tr>
             <tr>
               <td class="font-bold py-2 px-4 border-b">OS Kind</td>
-              <td class="py-2 px-4 border-b">{{ title (index .Source.Target "os") }}</td>
+              <td class="py-2 px-4 border-b">{{ title "Todo" }}</td>
             </tr>
             <tr>
               <td class="font-bold py-2 px-4 border-b">Architecture</td>
-              <td class="py-2 px-4 border-b">{{ title (index .Source.Target "architecture") }}</td>
+              <td class="py-2 px-4 border-b">{{ title "Todo" }}</td>
             </tr>
           </tbody>
         </table>
