@@ -23,7 +23,7 @@
     <!-- Docker Image Information -->
     <div class="mt-8">
       <div class="overflow-x-clip">
-        <h2 class="text-xl font-bold">Images information</h2>
+        <h2 class="text-xl font-bold">Information</h2>
 
         <table class="min-w-full border rounded mt-4">
           <tbody class="divide-none">
@@ -40,12 +40,8 @@
               <td class="py-2 px-4 border-b">{{ title .Metadata.ImageConfig.OS }}</td>
             </tr>
             <tr>
-              <td class="font-bold py-2 px-4 border-b">OS Family</td>
-              <td class="py-2 px-4 border-b">{{ title (.Metadata.OS.Family | toString) }}</td>
-            </tr>
-            <tr>
               <td class="font-bold py-2 px-4 border-b">OS Name</td>
-              <td class="py-2 px-4 border-b">{{ title .Metadata.OS.Name }}</td>
+              <td class="py-2 px-4 border-b">{{ title (print (.Metadata.OS.Family | toString) " " .Metadata.OS.Name) }}</td>
             </tr>
             <tr>
               <td class="font-bold py-2 px-4 border-b">Architecture</td>
@@ -54,30 +50,27 @@
             <tr>
               <td class="font-bold py-2 px-4 border-b">Env Vars</td>
               <td class="py-2 px-4 border-b">
-                {{ range $env := .Metadata.ImageConfig.Config.Env }}
-                  {{ $env }}<br />
+                <table>
+                {{ $lastEnv := last .Metadata.ImageConfig.Config.Env }}
+                {{ range $i, $env := .Metadata.ImageConfig.Config.Env }}
+
+                  {{ $borderClass := "border-b" }}
+                  {{ if eq $env $lastEnv }}
+                    {{ $borderClass = "border-b-0" }}
+                  {{ end }}
+
+                  {{ $envParts := splitList "=" $env }}
+                  <tr {{ if eq $env $lastEnv }}class="border-b-0"{{ end }}>
+                    <td class="py-2 px-4 font-bold {{ $borderClass }}">
+                      {{ index $envParts 0 }}
+                    </td>
+                    <td class="py-2 px-4 mx-auto break-all {{ $borderClass }}">
+                      {{ index $envParts 1 }}
+                    </td>
+                  </tr>
                 {{ end }}
+                </table>
               </td>
-            </tr>
-            <tr>
-              <td class="font-bold py-2 px-4 border-b">Entrypoint</td>
-              <td class="py-2 px-4 border-b">
-                {{ range $entrypoint := .Metadata.ImageConfig.Config.Entrypoint }}
-                  {{ $entrypoint }}&nbsp;
-                {{ end }}
-              </td>
-            </tr>
-            <tr>
-              <td class="font-bold py-2 px-4 border-b">Cmd</td>
-              <td class="py-2 px-4 border-b">
-                {{ range $cmd := .Metadata.ImageConfig.Config.Cmd }}
-                  {{ $cmd }}&nbsp;
-                {{ end }}
-              </td>
-            </tr>
-            <tr>
-              <td class="font-bold py-2 px-4 border-b">User</td>
-              <td class="py-2 px-4 border-b">{{ .Metadata.ImageConfig.Config.User }}</td>
             </tr>
           </tbody>
         </table>
@@ -87,26 +80,41 @@
     <!-- Vulnerabilities Table -->
     <div class="mt-8 mb-4">
       <h2 class="text-xl font-bold">Vulnerabilities</h2>
-
-      <table class="min-w-full border rounded mt-4">
-        <thead class="bg-gray-200">
+        {{ range $result := .Results }}
+        <table class="min-w-full border rounded mt-4">
+          <colgroup>
+            <col span="1" style="width: 20%;">
+            <col span="1" style="width: 10%;">
+            <col span="1" style="width: 10%;">
+            <col span="1" style="width: 60%;">
+          </colgroup>
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="py-2 px-4 border-b uppercase" colspan="4">
+                {{ $result.Class }}({{ $result.Type }})
+              </th>
+            </tr>
+            <tr>
+              <th class="py-2 px-4 border-b">Id</th>
+              <th class="py-2 px-4 border-b">Severity</th>
+              <th class="py-2 px-4 border-b">Status</th>
+              <th class="py-2 px-4 border-b">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{ range $vuln := $result.Vulnerabilities }}
           <tr>
-            <th class="py-2 px-4 border-b">Target</th>
-            <th class="py-2 px-4 border-b">Class</th>
-            <th class="py-2 px-4 border-b">Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{ range $result := .Results }}
-          <tr>
-            <td class="py-2 px-4 border-b">{{ $result.Target }}</td>
-            <td class="py-2 px-4 border-b">{{ $result.Class }}</td>
-            <td class="py-2 px-4 border-b">{{ $result.Type }}</td>
+            <td class="py-2 px-4 border-b">
+              <a class="link" href="{{ $vuln.PrimaryURL }}">{{ $vuln.VulnerabilityID }}</a>
+            </td>
+            <td class="py-2 px-4 border-b">{{ title (lower $vuln.Severity) }}</td>
+            <td class="py-2 px-4 border-b">{{ title (lower $vuln.Status.String) }}</td>
+            <td class="py-2 px-4 border-b">{{ $vuln.Description }}</td>
           </tr>
           {{ end }}
-          <!-- Add more rows if there are multiple vulnerabilities -->
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+        {{ end }}
     </div>
   </div>
 </body>

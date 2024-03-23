@@ -2,7 +2,6 @@ package scan
 
 import (
 	"embed"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -29,19 +28,19 @@ type Renderer interface {
 	PublishAssets(path string) error
 }
 
-type RendererConstructor func(inputFile, outputDir string) (Renderer, error)
+type RendererConstructor[T any] func(inputFile, outputDir string) (Renderer, error)
 
 func NewRendererFactory() *RendererFactory {
 	return &RendererFactory{}
 }
 
 type RendererFactory struct {
-	ctrs map[string]RendererConstructor
+	ctrs map[string]RendererConstructor[any]
 }
 
-func (rf *RendererFactory) Register(name string, ctr RendererConstructor) {
+func (rf *RendererFactory) Register(name string, ctr RendererConstructor[any]) {
 	if rf.ctrs == nil {
-		rf.ctrs = make(map[string]RendererConstructor, 0)
+		rf.ctrs = make(map[string]RendererConstructor[any], 0)
 	}
 
 	rf.ctrs[name] = ctr
@@ -56,10 +55,10 @@ func (rf *RendererFactory) Create(toolName, inputFile, outputDir string) (Render
 	return ctr(inputFile, outputDir)
 }
 
-func NewDefaultRenderer[T any](name string, r io.Reader, w io.Writer, fs embed.FS) *DefaultRenderer[T] {
+func NewDefaultRenderer[T any](name string, rl ReportLoader[T], w io.Writer, fs embed.FS) *DefaultRenderer[T] {
 	return &DefaultRenderer[T]{
 		n:  name,
-		r:  r,
+		rl: rl,
 		w:  w,
 		fs: fs,
 	}
@@ -67,7 +66,7 @@ func NewDefaultRenderer[T any](name string, r io.Reader, w io.Writer, fs embed.F
 
 type DefaultRenderer[T any] struct {
 	n  string
-	r  io.Reader
+	rl ReportLoader[T]
 	w  io.Writer
 	fs embed.FS
 }
@@ -77,7 +76,7 @@ func (r *DefaultRenderer[T]) Name() string {
 }
 
 func (r *DefaultRenderer[T]) Render(drawLayout bool) error {
-	report, err := r.loadReport()
+	report, err := r.rl.Load()
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCannotRender, err)
 	}
@@ -109,21 +108,6 @@ func (r *DefaultRenderer[T]) PublishAssets(path string) error {
 	}
 
 	return nil
-}
-
-func (r *DefaultRenderer[T]) loadReport() (T, error) {
-	var report T
-
-	content, err := io.ReadAll(r.r)
-	if err != nil {
-		return report, fmt.Errorf("%w: %w", ErrCannotLoadReport, err)
-	}
-
-	if err := json.Unmarshal(content, &report); err != nil {
-		return report, fmt.Errorf("%w: %w", ErrCannotLoadReport, err)
-	}
-
-	return report, nil
 }
 
 func (r *DefaultRenderer[T]) loadTemplate() (*template.Template, error) {

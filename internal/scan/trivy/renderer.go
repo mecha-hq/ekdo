@@ -18,16 +18,20 @@ var (
 	ErrCannotCreateScanRenderer = fmt.Errorf("cannot create new trivy scan renderer")
 )
 
+type Report = types.Report
+
 func NewScanRenderer(inputFile, outputDir string) (scan.Renderer, error) {
 	r, err := iox.NewInputReader(inputFile)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}
 
+	rl := scan.NewDefaultReportLoader[Report](r)
+
 	w, err := iox.NewOutputWriter(filepath.Join(outputDir, "trivy-report.html"))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}
 
-	return scan.NewDefaultRenderer[types.Report]("trivy", r, w, emfs), nil
+	return scan.NewDefaultRenderer("trivy", rl, w, emfs), nil
 }

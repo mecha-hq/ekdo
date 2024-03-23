@@ -23,7 +23,7 @@
     <!-- Docker Image Information -->
     <div class="mt-8">
       <div class="overflow-x-clip">
-        <h2 class="text-xl font-bold">Images information</h2>
+        <h2 class="text-xl font-bold">Information</h2>
 
         <table class="min-w-full border rounded mt-4">
           <tbody class="divide-none">
@@ -38,6 +38,10 @@
             <tr>
               <td class="font-bold py-2 px-4 border-b">OS Kind</td>
               <td class="py-2 px-4 border-b">{{ title (index .Source.Target "os") }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold py-2 px-4 border-b">OS Name</td>
+              <td class="py-2 px-4 border-b">{{ title (print .Distro.Name " " .Distro.Version) }}</td>
             </tr>
             <tr>
               <td class="font-bold py-2 px-4 border-b">Architecture</td>
@@ -55,13 +59,23 @@
       <table class="min-w-full border rounded mt-4">
         <thead class="bg-gray-200">
           <tr>
-            <th class="py-2 px-4 border-b">Target</th>
-            <th class="py-2 px-4 border-b">Class</th>
-            <th class="py-2 px-4 border-b">Type</th>
+            <th class="py-2 px-4 border-b">Id</th>
+            <th class="py-2 px-4 border-b">Severity</th>
+            <th class="py-2 px-4 border-b">Fix state</th>
+            <th class="py-2 px-4 border-b">Description</th>
           </tr>
         </thead>
         <tbody>
-          <!-- TODO: implement vulnerability list -->
+          {{ range .Matches }}
+          <tr>
+            <td class="py-2 px-4 border-b">
+              <a class="link" href="{{ .Vulnerability.DataSource }}">{{ .Vulnerability.ID }}</a>
+            </td>
+            <td class="py-2 px-4 border-b">{{ .Vulnerability.Severity }}</td>
+            <td class="py-2 px-4 border-b">{{ .Vulnerability.Fix.State }}</td>
+            <td class="py-2 px-4 border-b">{{ .Vulnerability.Description }}</td>
+          </tr>
+          {{ end }}
         </tbody>
       </table>
     </div>

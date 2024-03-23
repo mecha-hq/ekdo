@@ -64,7 +64,7 @@
           <tr>
             <td class="py-2 px-4 border-b">{{ .Code }}</td>
             <td class="py-2 px-4 border-b">{{ .Title }}</td>
-            <td class="py-2 px-4 border-b">{{ .Level }}</td>
+            <td class="py-2 px-4 border-b">{{ title (lower .Level) }}</td>
             <td class="py-2 px-4 border-b">
             {{- range .Alerts }}
               <p>{{ . }}</p>

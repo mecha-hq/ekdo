@@ -17,16 +17,20 @@ var (
 	ErrCannotCreateScanRenderer = fmt.Errorf("cannot create new grype scan renderer")
 )
 
+type Report = models.Document
+
 func NewScanRenderer(inputFile, outputDir string) (scan.Renderer, error) {
 	r, err := iox.NewInputReader(inputFile)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}
 
+	rl := scan.NewDefaultReportLoader[Report](r)
+
 	w, err := iox.NewOutputWriter(filepath.Join(outputDir, "grype-report.html"))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}
 
-	return scan.NewDefaultRenderer[models.Document]("grype", r, w, emfs), nil
+	return scan.NewDefaultRenderer("grype", rl, w, emfs), nil
 }
