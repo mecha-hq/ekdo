@@ -1,23 +1,11 @@
 ---
-name: build
+name: Snapshot Release
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
-  qa:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: TODO
-        run: echo "TODO"
-
-  build:
+  goreleaser:
     needs: qa
     runs-on: ubuntu-24.04
     steps:
@@ -40,6 +28,6 @@ jobs:
         with:
           distribution: goreleaser
           version: "v2.3.2"
-          args: release --clean
+          args: release --clean --snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,7 +26,7 @@ archives:
 checksum:
   name_template: "checksums.txt"
 snapshot:
-  version_template: "{{ incpatch .Version }}-develop"
+  version_template: "{{ .Branch }}"
 changelog:
   sort: asc
   filters:
@@ -41,20 +41,32 @@ release:
   prerelease: auto
 dockers:
   - image_templates:
-      - "mecha-hq/ekdo:{{ .Version }}-amd64"
+      - "ghcr.io/mecha-hq/ekdo:{{ .Version }}-amd64"
     # use: buildx
     dockerfile: Dockerfile
     build_flag_templates:
+      - "--target=goreleaser"
+      - "--pull"
       - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
   - image_templates:
-      - "mecha-hq/ekdo:{{ .Version }}-arm64"
+      - "ghcr.io/mecha-hq/ekdo:{{ .Version }}-arm64"
     # use: buildx
     goarch: arm64
     dockerfile: Dockerfile
     build_flag_templates:
+      - "--target=goreleaser"
+      - "--pull"
       - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
 docker_manifests:
-  - name_template: "mecha-hq/ekdo:{{ .Version }}"
+  - name_template: "ghcr.io/mecha-hq/ekdo:{{ .Version }}"
     image_templates:
-      - "mecha-hq/ekdo:{{ .Version }}-amd64"
-      - "mecha-hq/ekdo:{{ .Version }}-arm64"
+      - "ghcr.io/mecha-hq/ekdo:{{ .Version }}-amd64"
+      - "ghcr.io/mecha-hq/ekdo:{{ .Version }}-arm64"

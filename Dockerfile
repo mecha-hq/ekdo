@@ -6,12 +6,12 @@ COPY go.mod go.sum .
 
 RUN go mod download
 
-COPY main.go .
-COPY internal/ internal/
+COPY main.go /app/main.go
+COPY internal/ /app/internal/
 
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/ekdo .
 
-FROM gcr.io/distroless/static
+FROM gcr.io/distroless/static AS static
 
 LABEL maintainer="omissis"
 # LABEL org.opencontainers.image.created
@@ -31,6 +31,12 @@ LABEL org.opencontainers.image.description="A simple CLI tool to render image sc
 
 USER nonroot:nonroot
 
+ENTRYPOINT ["/ekdo"]
+
+FROM static AS dockerbuild
+
 COPY --from=builder /usr/local/bin/ekdo /ekdo
 
-ENTRYPOINT ["/ekdo"]
+FROM static AS goreleaser
+
+COPY ekdo /ekdo

@@ -24,8 +24,6 @@ type report interface {
 }
 
 type Report struct {
-	report
-
 	Path            string           `json:"path"`
 	Platform        string           `json:"platform"`
 	ProjectName     string           `json:"projectName"`
@@ -114,3 +112,5 @@ func (dl *DedupeLoader[T]) Load() (T, error) {
 
 	return t, nil
 }
+
+var _ report = (*Report)(nil)

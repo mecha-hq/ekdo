@@ -4,6 +4,7 @@
 dockle = "0.4.14"
 golang = "1.23.2"
 goreleaser = "2.3.2"
+golangci-lint = "1.61.0"
 grype = "0.82.1"
 shellbits = "0.2.0"
 snyk = "1.1293.1"

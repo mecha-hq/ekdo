@@ -4,6 +4,7 @@ package cobra
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -66,7 +67,9 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper, replaceHyphenWithCamelCase bo
 		// Apply the viper config value to the flag when the flag is not set and viper has a value
 		if !f.Changed && v.IsSet(configName) {
 			val := v.Get(configName)
-			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+			if err := cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val)); err != nil {
+				log.Printf("could not set flag %s: %v", f.Name, err)
+			}
 		}
 	})
 }
