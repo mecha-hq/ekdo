@@ -17,24 +17,12 @@ jobs:
 
   build:
     needs: qa
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        arch: ["amd64"]
-        # arch: ["amd64", "arm64"]
-        include:
-          # - arch: "arm64"
-          #   runner: "ubuntu-24.04-arm"
-          - arch: "amd64"
-            runner: "ubuntu-24.04"
+        arch: ["amd64", "arm64"]
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@v2
-        with:
-          egress-policy: audit
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Login to Container Registry
@@ -43,19 +31,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          platforms: linux/${{ matrix.arch }}
-          push: true
-          tags: ghcr.io/mecha-hq/ekdo:latest-${{ matrix.arch }}
+      - name: Build image
+        run: docker build --platform=linux/${{ matrix.arch }} --tag ghcr.io/mecha-hq/ekdo:latest-${{ matrix.arch }} .
+      - name: Push image
+        run: docker push ghcr.io/mecha-hq/ekdo:latest-${{ matrix.arch }}
 
   finalize:
     needs: build
     runs-on: ubuntu-24.04
     steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Login to Container Registry
@@ -64,23 +48,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      # - name: Pull images
-      #   run: |
-      #     docker pull ghcr.io/mecha-hq/ekdo:latest-amd64
-      #     docker pull ghcr.io/mecha-hq/ekdo:latest-arm64
-      # - name: Create Docker manifest
-      #   run: docker manifest create ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-amd64 ghcr.io/mecha-hq/ekdo:latest-arm64
-      # - name: Annotate Docker manifest
-      #   run: |
-      #     docker manifest annotate --arch amd64 --os linux ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-amd64
-      #     docker manifest annotate --arch arm64 --os linux ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-arm64
       - name: Pull images
         run: |
           docker pull ghcr.io/mecha-hq/ekdo:latest-amd64
+          docker pull ghcr.io/mecha-hq/ekdo:latest-arm64
       - name: Create Docker manifest
-        run: docker manifest create ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-amd64
+        run: docker manifest create ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-amd64 ghcr.io/mecha-hq/ekdo:latest-arm64
       - name: Annotate Docker manifest
         run: |
           docker manifest annotate --arch amd64 --os linux ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-amd64
-      - name: Push Docker manifest
-        run: docker manifest push ghcr.io/mecha-hq/ekdo:latest
+          docker manifest annotate --arch arm64 --os linux ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-arm64

@@ -1,4 +1,7 @@
-FROM golang:1.23.2-alpine3.20 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.23.2-alpine3.20 AS builder
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 WORKDIR /app
 
@@ -9,7 +12,7 @@ RUN go mod download
 COPY main.go .
 COPY internal/ internal/
 
-RUN CGO_ENABLED=0 go build -o /usr/local/bin/ekdo .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETPLATFORM go build -o /usr/local/bin/ekdo .
 
 FROM gcr.io/distroless/static
 
