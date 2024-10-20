@@ -1,5 +1,4 @@
 ---
-
 name: build
 
 on:
@@ -9,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -30,4 +29,4 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/mecha-ci/ekdo:latest
+          tags: ghcr.io/mecha-hq/ekdo:latest

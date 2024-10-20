@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var ErrUnknownLevel = fmt.Errorf("unknown level")
+var ErrUnknownLevel = fmt.Errorf("unknown slog level")
 
 type ReplaceAttrFn func(groups []string, a slog.Attr) slog.Attr
 

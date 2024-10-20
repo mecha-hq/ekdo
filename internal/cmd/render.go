@@ -5,13 +5,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/mecha-ci/ekdo/internal/app"
-	cobrax "github.com/mecha-ci/ekdo/internal/x/cobra"
+	"github.com/mecha-hq/ekdo/internal/app"
+	cobrax "github.com/mecha-hq/ekdo/internal/x/cobra"
 )
 
-var (
-	ErrCannotCompleteRenderCommand = fmt.Errorf("cannot complete render command")
-)
+var ErrCannotCompleteRenderCommand = fmt.Errorf("cannot complete render command")
 
 type RenderCommandFlags struct {
 	DrawLayout bool
@@ -76,13 +74,6 @@ func setupRenderCommandFlags(cmd *cobra.Command) {
 		false,
 		"Publish the files to the configured remote destination.",
 	)
-
-	// cmd.PersistentFlags().BoolP(
-	// 	"publish",
-	// 	"p",
-	// 	false,
-	// 	"Publish the files to the configured remote destination.",
-	// )
 }
 
 func getRenderCommandFlags(cmd *cobra.Command) (RenderCommandFlags, error) {

@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/mecha-ci/ekdo/internal/app"
-	"github.com/mecha-ci/ekdo/internal/cmd"
+	"github.com/mecha-hq/ekdo/internal/app"
+	"github.com/mecha-hq/ekdo/internal/cmd"
 )
 
 var (

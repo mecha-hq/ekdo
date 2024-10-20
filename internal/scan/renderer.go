@@ -10,7 +10,7 @@ import (
 
 	sprig "github.com/go-task/slim-sprig"
 
-	osx "github.com/mecha-ci/ekdo/internal/x/os"
+	osx "github.com/mecha-hq/ekdo/internal/x/os"
 )
 
 var (

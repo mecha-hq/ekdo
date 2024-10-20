@@ -3,12 +3,13 @@ package app
 import (
 	"errors"
 	"log/slog"
+	"os"
 
-	"github.com/mecha-ci/ekdo/internal/scan"
-	"github.com/mecha-ci/ekdo/internal/scan/dockle"
-	"github.com/mecha-ci/ekdo/internal/scan/grype"
-	"github.com/mecha-ci/ekdo/internal/scan/snyk"
-	"github.com/mecha-ci/ekdo/internal/scan/trivy"
+	"github.com/mecha-hq/ekdo/internal/scan"
+	"github.com/mecha-hq/ekdo/internal/scan/dockle"
+	"github.com/mecha-hq/ekdo/internal/scan/grype"
+	"github.com/mecha-hq/ekdo/internal/scan/snyk"
+	"github.com/mecha-hq/ekdo/internal/scan/trivy"
 )
 
 var ErrCannotCreateContainer = errors.New("cannot create container")
@@ -16,17 +17,19 @@ var ErrCannotCreateContainer = errors.New("cannot create container")
 type ContainerFactoryFunc func() (*Container, error)
 
 func NewDefaultParameters() Parameters {
-	return Parameters{}
+	return Parameters{
+		LogLevel: slog.LevelInfo,
+	}
 }
 
 type Parameters struct {
 	Versions map[string]string
 	LogLevel slog.Level
-	Debug    bool
 }
 
 type services struct {
 	scanRendererFactory *scan.RendererFactory
+	logger              *slog.Logger
 }
 
 func NewContainer() *Container {
@@ -51,4 +54,20 @@ func (c *Container) ScanRendererFactory() *scan.RendererFactory {
 	}
 
 	return c.scanRendererFactory
+}
+
+func (c *Container) Logger() *slog.Logger {
+	if c.logger == nil {
+		c.logger = slog.New(
+			slog.NewTextHandler(
+				os.Stderr,
+				&slog.HandlerOptions{
+					AddSource: true,
+					Level:     c.LogLevel,
+				},
+			),
+		)
+	}
+
+	return c.logger
 }

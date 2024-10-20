@@ -1,4 +1,4 @@
-module github.com/mecha-ci/ekdo
+module github.com/mecha-hq/ekdo
 
 go 1.21.6
 

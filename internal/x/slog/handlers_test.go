@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	slogx "github.com/mecha-ci/ekdo/internal/x/slog"
+	slogx "github.com/mecha-hq/ekdo/internal/x/slog"
 )
 
 func TestStacktraceReplaceAttr(t *testing.T) {

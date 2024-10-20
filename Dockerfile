@@ -16,9 +16,9 @@ FROM gcr.io/distroless/static
 LABEL maintainer="omissis"
 # LABEL org.opencontainers.image.created
 LABEL org.opencontainers.image.authors="omissis"
-LABEL org.opencontainers.image.url="https://github.com/mecha-ci/ekdo"
-LABEL org.opencontainers.image.documentation="https://github.com/mecha-ci/ekdo"
-LABEL org.opencontainers.image.source="https://github.com/mecha-ci/ekdo"
+LABEL org.opencontainers.image.url="https://github.com/mecha-hq/ekdo"
+LABEL org.opencontainers.image.documentation="https://github.com/mecha-hq/ekdo"
+LABEL org.opencontainers.image.source="https://github.com/mecha-hq/ekdo"
 # LABEL org.opencontainers.image.version
 # LABEL org.opencontainers.image.revision
 LABEL org.opencontainers.image.vendor="Mecha CI"

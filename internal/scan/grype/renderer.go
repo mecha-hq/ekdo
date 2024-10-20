@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/anchore/grype/grype/presenter/models"
-	"github.com/mecha-ci/ekdo/internal/scan"
-	iox "github.com/mecha-ci/ekdo/internal/x/io"
+	"github.com/mecha-hq/ekdo/internal/scan"
+	iox "github.com/mecha-hq/ekdo/internal/x/io"
 )
 
 var (

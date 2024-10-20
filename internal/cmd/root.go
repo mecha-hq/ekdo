@@ -2,16 +2,16 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"log/slog"
-	"os"
 
 	"github.com/spf13/cobra"
 
-	"github.com/mecha-ci/ekdo/internal/app"
-	cobrax "github.com/mecha-ci/ekdo/internal/x/cobra"
-	slogx "github.com/mecha-ci/ekdo/internal/x/slog"
+	"github.com/mecha-hq/ekdo/internal/app"
+	cobrax "github.com/mecha-hq/ekdo/internal/x/cobra"
+	slogx "github.com/mecha-hq/ekdo/internal/x/slog"
 )
+
+var ErrCannotExecutePersistentPreRun = fmt.Errorf("cannot execute persistent pre-run")
 
 type RootCommandFlags struct {
 	LogLevel slog.Level
@@ -19,28 +19,20 @@ type RootCommandFlags struct {
 }
 
 func NewRootCommand(ctr *app.Container) *cobra.Command {
-	const envPrefix = "ekdo"
-
 	root := &cobra.Command{
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			cobrax.BindFlags(cmd, cobrax.InitEnvs(envPrefix), log.Fatal, envPrefix)
+			if err := cobrax.InitializeConfig(cmd, "ekdo", "EKDO"); err != nil {
+				return fmt.Errorf("%w: %w", ErrCannotExecutePersistentPreRun, err)
+			}
 
 			flags, err := getRootCommandFlags(cmd)
 			if err != nil {
-				return err
+				return fmt.Errorf("%w: %w", ErrCannotExecutePersistentPreRun, err)
 			}
 
-			ctr.LogLevel = flags.LogLevel
-			ctr.Debug = flags.Debug
+			setupContainerParameters(ctr, flags)
 
-			slog.SetDefault(
-				slog.New(
-					slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-						AddSource: true,
-						Level:     ctr.LogLevel,
-					}),
-				),
-			)
+			setupGlobals(ctr)
 
 			return nil
 		},
@@ -48,8 +40,6 @@ func NewRootCommand(ctr *app.Container) *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
-
-	cobrax.BindFlags(root, cobrax.InitEnvs(envPrefix), log.Fatal, envPrefix)
 
 	setupRootCommandFlags(root)
 
@@ -62,14 +52,8 @@ func NewRootCommand(ctr *app.Container) *cobra.Command {
 func setupRootCommandFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String(
 		"log-level",
-		slog.LevelDebug.String(),
-		"set the log level",
-	)
-
-	cmd.PersistentFlags().Bool(
-		"debug",
-		true,
-		"activates some behaviors that facilitate debugging",
+		slog.LevelInfo.String(),
+		"Set the log level. Allowed values are: DEBUG, INFO, WARN and ERROR.",
 	)
 }
 
@@ -84,13 +68,15 @@ func getRootCommandFlags(cmd *cobra.Command) (RootCommandFlags, error) {
 		return RootCommandFlags{}, fmt.Errorf("%w '%s': %w", cobrax.ErrParsingFlag, "log-level", err)
 	}
 
-	debug, err := cmd.Flags().GetBool("debug")
-	if err != nil {
-		return RootCommandFlags{}, fmt.Errorf("%w '%s': %w", cobrax.ErrParsingFlag, "debug", err)
-	}
-
 	return RootCommandFlags{
 		LogLevel: slogLevel,
-		Debug:    debug,
 	}, nil
+}
+
+func setupContainerParameters(ctr *app.Container, flags RootCommandFlags) {
+	ctr.LogLevel = flags.LogLevel
+}
+
+func setupGlobals(ctr *app.Container) {
+	slog.SetDefault(ctr.Logger())
 }
