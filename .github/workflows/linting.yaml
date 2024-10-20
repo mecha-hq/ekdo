@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   goreleaser:
-    needs: qa
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
