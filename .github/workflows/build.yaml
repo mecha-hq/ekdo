@@ -12,49 +12,34 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: TODO
         run: echo "TODO"
 
   build:
     needs: qa
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: ["amd64", "arm64"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Login to Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build image
-        run: docker build --platform=linux/${{ matrix.arch }} --tag ghcr.io/mecha-hq/ekdo:latest-${{ matrix.arch }} .
-      - name: Push image
-        run: docker push ghcr.io/mecha-hq/ekdo:latest-${{ matrix.arch }}
-
-  finalize:
-    needs: build
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Login to Container Registry
-        uses: docker/login-action@v3
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pull images
-        run: |
-          docker pull ghcr.io/mecha-hq/ekdo:latest-amd64
-          docker pull ghcr.io/mecha-hq/ekdo:latest-arm64
-      - name: Create Docker manifest
-        run: docker manifest create ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-amd64 ghcr.io/mecha-hq/ekdo:latest-arm64
-      - name: Annotate Docker manifest
-        run: |
-          docker manifest annotate --arch amd64 --os linux ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-amd64
-          docker manifest annotate --arch arm64 --os linux ghcr.io/mecha-hq/ekdo:latest ghcr.io/mecha-hq/ekdo:latest-arm64
+          go-version: "1.23.2"
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "v2.3.2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
