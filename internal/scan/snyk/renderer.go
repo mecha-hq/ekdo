@@ -60,7 +60,7 @@ func NewScanRenderer(inputFile, outputDir string) (scan.Renderer, error) {
 
 	rl := NewDedupeLoader(scan.NewDefaultReportLoader[*Report](r))
 
-	w, err := iox.NewOutputWriter(filepath.Join(outputDir, "snyk-report.html"))
+	w, err := iox.NewOutputWriter(filepath.Join(outputDir, "snyk.html"))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}

@@ -27,7 +27,7 @@ func NewScanRenderer(inputFile, outputDir string) (scan.Renderer, error) {
 
 	rl := scan.NewDefaultReportLoader[Report](r)
 
-	w, err := iox.NewOutputWriter(filepath.Join(outputDir, "dockle-report.html"))
+	w, err := iox.NewOutputWriter(filepath.Join(outputDir, "dockle.html"))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrCannotCreateScanRenderer, err)
 	}
